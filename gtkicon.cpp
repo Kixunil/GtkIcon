@@ -26,6 +26,8 @@
 #include <set>
 #include <memory>
 
+#define DOMAIN_PREFIX "com.funcoil."
+
 #define _(str) gettext(str)
 
 using namespace Gtk;
@@ -85,7 +87,7 @@ filter_func (DBusConnection *connection,
 	DBusError dberr;
 	dbus_error_init (&dberr);
 
-	if (dbus_message_is_signal (message, "sk.pixelcomp.gtkicon", "changeIcon")) {
+	if (dbus_message_is_signal (message, DOMAIN_PREFIX "gtkicon", "changeIcon")) {
 		dbus_message_get_args (message, &dberr, DBUS_TYPE_STRING, &path, DBUS_TYPE_INVALID);
 		if (dbus_error_is_set (&dberr)) {
 			fprintf (stderr, _("Error getting message args: %s"), dberr.message);
@@ -94,7 +96,7 @@ filter_func (DBusConnection *connection,
 
 			handled = TRUE;
 		}
-	} else if(dbus_message_is_signal (message, "sk.pixelcomp.gtkicon", "changeScript")) {
+	} else if(dbus_message_is_signal (message, DOMAIN_PREFIX "gtkicon", "changeScript")) {
 		dbus_message_get_args (message, &dberr, DBUS_TYPE_STRING, &path, DBUS_TYPE_INVALID);
 		if (dbus_error_is_set (&dberr)) {
 			fprintf (stderr, _("Error getting message args: %s"), dberr.message);
@@ -103,7 +105,7 @@ filter_func (DBusConnection *connection,
 
 			handled = TRUE;
 		}
-	} else if(dbus_message_is_signal (message, "sk.pixelcomp.gtkicon", "quit")) {
+	} else if(dbus_message_is_signal (message, DOMAIN_PREFIX "gtkicon", "quit")) {
 		dbus_message_get_args (message, &dberr, DBUS_TYPE_INVALID);
 
 		if (dbus_error_is_set (&dberr)) {
@@ -125,7 +127,7 @@ int main(int argc, char *argv[]) {
 		return 2;
 	}
 
-	Main app(argc, argv, "sk.pixelcomp.gtkicon");
+	Main app(argc, argv, DOMAIN_PREFIX "gtkicon");
 
 	DBusError dberr;
 	DBusConnection *dbconn;
@@ -141,7 +143,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	dbus_bus_request_name (dbconn, "sk.pixelcomp.gtkicon",
+	dbus_bus_request_name (dbconn, DOMAIN_PREFIX "gtkicon",
 	                       DBUS_NAME_FLAG_REPLACE_EXISTING, &dberr);
 	if (dbus_error_is_set (&dberr)) {
 		fprintf (stderr, _("requesting name failed: %s\n"), dberr.message);
@@ -153,7 +155,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 
 	dbus_bus_add_match (dbconn,
-	                    "type='signal',interface='sk.pixelcomp.gtkicon'",
+	                    "type='signal',interface='" DOMAIN_PREFIX "gtkicon'",
 	                    &dberr);
 
 	if (dbus_error_is_set (&dberr)) {
